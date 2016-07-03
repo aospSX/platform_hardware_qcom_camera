@@ -3535,8 +3535,14 @@ int32_t QCameraParameters::initDefaultParameters()
     set(KEY_QC_HISTOGRAM, VALUE_DISABLE);
 
     //Set Red Eye Reduction
-    set(KEY_QC_SUPPORTED_REDEYE_REDUCTION, enableDisableValues);
-    setRedeyeReduction(VALUE_DISABLE);
+#ifdef USE_CAF_CAMERA
+    if ((m_pCapability->qcom_supported_feature_mask & CAM_QCOM_FEATURE_REDEYE) > 0) {
+#endif
+        set(KEY_QC_SUPPORTED_REDEYE_REDUCTION, enableDisableValues);
+        setRedeyeReduction(VALUE_DISABLE);
+#ifdef USE_CAF_CAMERA
+    }
+#endif
 
     //Set SkinTone Enhancement
     set(KEY_QC_SUPPORTED_SKIN_TONE_ENHANCEMENT_MODES, enableDisableValues);
@@ -3571,23 +3577,36 @@ int32_t QCameraParameters::initDefaultParameters()
     }
 
     //Set Face Detection
-    set(KEY_QC_SUPPORTED_FACE_DETECTION, onOffValues);
-    set(KEY_QC_FACE_DETECTION, VALUE_OFF);
+#ifdef USE_CAF_CAMERA
+    if ((m_pCapability->qcom_supported_feature_mask &
+             CAM_QCOM_FEATURE_FACE_DETECTION) > 0) {
+#endif
+        set(KEY_QC_SUPPORTED_FACE_DETECTION, onOffValues);
+        set(KEY_QC_FACE_DETECTION, VALUE_OFF);
+#ifdef USE_CAF_CAMERA
+    }
+#endif
 
     //Set Face Recognition
     //set(KEY_QC_SUPPORTED_FACE_RECOGNITION, onOffValues);
     //set(KEY_QC_FACE_RECOGNITION, VALUE_OFF);
 
     //Set ZSL
-    set(KEY_QC_SUPPORTED_ZSL_MODES, onOffValues);
-#ifdef DEFAULT_ZSL_MODE_ON
-    set(KEY_QC_ZSL, VALUE_ON);
-    m_bZslMode = true;
-#else
-    set(KEY_QC_ZSL, VALUE_OFF);
-    m_bZslMode = false;
+#ifdef USE_CAF_CAMERA
+    if ((m_pCapability->qcom_supported_feature_mask & CAM_QCOM_FEATURE_ZSL) > 0) {
 #endif
-    m_bZslMode_new = m_bZslMode;
+        set(KEY_QC_SUPPORTED_ZSL_MODES, onOffValues);
+#ifdef DEFAULT_ZSL_MODE_ON
+        set(KEY_QC_ZSL, VALUE_ON);
+        m_bZslMode = true;
+#else
+        set(KEY_QC_ZSL, VALUE_OFF);
+        m_bZslMode = false;
+#endif
+        m_bZslMode_new = m_bZslMode;
+#ifdef USE_CAF_CAMERA
+    }
+#endif
 
     //Set video HDR
     if ((m_pCapability->qcom_supported_feature_mask & CAM_QCOM_FEATURE_VIDEO_HDR) > 0) {
@@ -3599,8 +3618,15 @@ int32_t QCameraParameters::initDefaultParameters()
     String8 touchValues = createValuesStringFromMap(
        TOUCH_AF_AEC_MODES_MAP, sizeof(TOUCH_AF_AEC_MODES_MAP) / sizeof(QCameraMap));
 
-    set(KEY_QC_SUPPORTED_TOUCH_AF_AEC, touchValues);
-    set(KEY_QC_TOUCH_AF_AEC, TOUCH_AF_AEC_OFF);
+#ifdef USE_CAF_CAMERA
+    if ((m_pCapability->qcom_supported_feature_mask &
+            CAM_QCOM_FEATURE_TOUCH_AF_AEC) > 0) {
+#endif
+        set(KEY_QC_SUPPORTED_TOUCH_AF_AEC, touchValues);
+        set(KEY_QC_TOUCH_AF_AEC, TOUCH_AF_AEC_OFF);
+#ifdef USE_CAF_CAMERA
+    }
+#endif
 
     //set flip mode
     if ((m_pCapability->qcom_supported_feature_mask & CAM_QCOM_FEATURE_FLIP) > 0) {

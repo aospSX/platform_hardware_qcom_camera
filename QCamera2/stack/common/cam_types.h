@@ -1245,6 +1245,11 @@ typedef struct {
 #define CAM_QCOM_FEATURE_CAC            (1<<9)
 #define CAM_QCOM_FEATURE_SCALE          (1<<10)
 #define CAM_QCOM_FEATURE_EFFECT         (1<<11)
+#ifdef USE_CAF_CAMERA
+#define CAM_QCOM_FEATURE_ZSL            (1<<12)
+#define CAM_QCOM_FEATURE_REDEYE         (1<<13)
+#define CAM_QCOM_FEATURE_TOUCH_AF_AEC   (1<<14)
+#endif
 
 // Counter clock wise
 typedef enum {

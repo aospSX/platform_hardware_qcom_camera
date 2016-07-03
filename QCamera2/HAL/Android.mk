@@ -26,6 +26,10 @@ ifeq ($(TARGET_BOARD_PLATFORM),msm7x30)
         LOCAL_CFLAGS += -D_MSM7X30_
 endif
 
+ifeq ($(TARGET_USE_CAF_CAMERA),true)
+        LOCAL_CFLAGS += -DUSE_CAF_CAMERA
+endif
+
 ifneq ($(call is-platform-sdk-version-at-least,18),true)
 LOCAL_CFLAGS += -DUSE_JB_MR1
 endif
