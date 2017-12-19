@@ -30,7 +30,7 @@
 #include "mm_jpeg_ionbuf.h"
 #include <linux/msm_ion.h>
 
-#ifdef _MSM7X30_
+#if defined(_MSM7X30_) || defined(_MSM8660_)
 #define CAMERA_ION_HEAP_ID ION_CAMERA_HEAP_ID
 #else
 #define CAMERA_ION_HEAP_ID ION_IOMMU_HEAP_ID

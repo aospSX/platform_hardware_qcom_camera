@@ -24,6 +24,10 @@ ifeq ($(TARGET_BOARD_PLATFORM),msm7x30)
         LOCAL_CFLAGS += -D_MSM7X30_
 endif
 
+ifeq ($(TARGET_BOARD_PLATFORM),msm8660)
+        LOCAL_CFLAGS += -D_MSM8660_
+endif
+
 LOCAL_SRC_FILES := \
     src/mm_jpeg_queue.c \
     src/mm_jpeg_exif.c \
