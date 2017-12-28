@@ -450,7 +450,7 @@ OMX_ERRORTYPE mm_jpeg_encoding_mode(
   return rc;
 }
 
-#ifndef _MSM7X30_
+#if 0
 /** mm_jpeg_metadata:
  *
  *  Arguments:
@@ -882,12 +882,16 @@ OMX_ERRORTYPE mm_jpeg_session_config_main(mm_jpeg_job_session_t *p_session)
     return rc;
   }
 
+#if 0
   /* set the encoding mode */
   rc = mm_jpeg_encoding_mode(p_session);
   if (OMX_ErrorNone != rc) {
     CDBG_ERROR("%s: config encoding mode failed", __func__);
     return rc;
   }
+#else
+  mm_jpeg_encoding_mode(p_session);
+#endif
 
   return rc;
 }
@@ -1108,7 +1112,7 @@ static OMX_ERRORTYPE mm_jpeg_configure_job_params(
     return ret;
   }
 
-#ifndef _MSM7X30_
+#if 0
   /* set metadata */
   ret = mm_jpeg_metadata(p_session);
   CDBG_ERROR("%s: config makernote data failed", __func__);
