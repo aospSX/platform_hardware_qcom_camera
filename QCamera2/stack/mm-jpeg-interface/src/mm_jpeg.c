@@ -435,6 +435,7 @@ OMX_ERRORTYPE mm_jpeg_encoding_mode(
     return rc;
   }
 
+#if 0
   if (ENCODING_MODE_PARALLEL) {
     encoding_mode = OMX_Parallel_Encoding;
   } else {
@@ -442,6 +443,9 @@ OMX_ERRORTYPE mm_jpeg_encoding_mode(
   }
   CDBG_HIGH("%s:%d] encoding mode = %d ", __func__, __LINE__,
     (int)encoding_mode);
+#else
+  encoding_mode = OMX_Serial_Encoding;
+#endif
   rc = OMX_SetParameter(p_session->omx_handle, indextype, &encoding_mode);
   if (rc != OMX_ErrorNone) {
     CDBG_ERROR("%s:%d] Failed", __func__, __LINE__);
@@ -1051,8 +1055,10 @@ static OMX_ERRORTYPE mm_jpeg_configure_job_params(
 {
   OMX_ERRORTYPE ret = OMX_ErrorNone;
   OMX_IMAGE_PARAM_QFACTORTYPE q_factor;
+#if 0
   QOMX_WORK_BUFFER work_buffer;
   OMX_INDEXTYPE work_buffer_index;
+#endif
   mm_jpeg_encode_params_t *p_params = &p_session->params;
   mm_jpeg_encode_job_t *p_jobparams = &p_session->encode_job;
 
@@ -1089,6 +1095,7 @@ static OMX_ERRORTYPE mm_jpeg_configure_job_params(
     return ret;
   }
 
+#if 0
   //Pass the ION buffer to be used as o/p for HW
   memset(&work_buffer, 0x0, sizeof(QOMX_WORK_BUFFER));
   ret = OMX_GetExtensionIndex(p_session->omx_handle,
@@ -1111,6 +1118,7 @@ static OMX_ERRORTYPE mm_jpeg_configure_job_params(
     CDBG_ERROR("%s:%d] Error", __func__, __LINE__);
     return ret;
   }
+#endif
 
 #if 0
   /* set metadata */
@@ -1509,6 +1517,7 @@ int32_t mm_jpeg_init(mm_jpeg_obj *my_obj)
     return -1;
   }
 
+#if 0
   /* set work buf size from max picture size */
   if (my_obj->max_pic_w <= 0 || my_obj->max_pic_h <= 0) {
     CDBG_ERROR("%s:%d] Width and height are not valid "
@@ -1529,12 +1538,15 @@ int32_t mm_jpeg_init(mm_jpeg_obj *my_obj)
     CDBG_ERROR("%s:%d] Ion allocation failed",__func__, __LINE__);
     return -1;
   }
+#endif
 
   /* load OMX */
   if (OMX_ErrorNone != OMX_Init()) {
     /* roll back in error case */
     CDBG_ERROR("%s:%d] OMX_Init failed (%d)", __func__, __LINE__, rc);
+#if 0
     buffer_deallocate(&my_obj->ionBuffer);
+#endif
     mm_jpeg_jobmgr_thread_release(my_obj);
     mm_jpeg_queue_deinit(&my_obj->ongoing_job_q);
     pthread_mutex_destroy(&my_obj->job_lock);
@@ -1574,11 +1586,13 @@ int32_t mm_jpeg_deinit(mm_jpeg_obj *my_obj)
     CDBG_ERROR("%s:%d] Error", __func__, __LINE__);
   }
 
+#if 0
   /*Release the ION buffer*/
   rc = buffer_deallocate(&my_obj->ionBuffer);
   if (0 != rc) {
     CDBG_ERROR("%s:%d] Error releasing ION buffer", __func__, __LINE__);
   }
+#endif
 
   /* destroy locks */
   pthread_mutex_destroy(&my_obj->job_lock);
@@ -1820,7 +1834,9 @@ int32_t mm_jpeg_create_session(mm_jpeg_obj *my_obj,
     return rc;
   }
 
+#if 0
   p_session->work_buffer = my_obj->ionBuffer;
+#endif
 
   ret = mm_jpeg_session_create(p_session);
   if (OMX_ErrorNone != ret) {
