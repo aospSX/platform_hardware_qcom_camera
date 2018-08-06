@@ -110,7 +110,7 @@ private:
 // framework. They are allocated from /dev/ion or gralloc.
 class QCameraStreamMemory : public QCameraMemory {
 public:
-    QCameraStreamMemory(camera_request_memory getMemory, bool cached);
+    QCameraStreamMemory(camera_request_memory getMemory, bool cached, bool video = false);
     virtual ~QCameraStreamMemory();
 
     virtual int allocate(int count, int size);
@@ -125,6 +125,7 @@ public:
 protected:
     camera_request_memory mGetMemory;
     camera_memory_t *mCameraMemory[MM_CAMERA_MAX_NUM_FRAMES];
+    bool mIsVideo;
 };
 
 // Externel heap memory is used for memories shared with

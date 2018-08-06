@@ -43,12 +43,15 @@ extern "C" {
 }
 
 #if defined(_MSM7X30_)
+#define MM_ION_HEAP_ID ION_CAMERA_HEAP_ID
 #define CAMERA_ION_HEAP_ID ION_CAMERA_HEAP_ID
 #define CAMERA_GRALLOC_HEAP_ID GRALLOC_USAGE_PRIVATE_CAMERA_HEAP
 #elif defined(_MSM8660_)
-#define CAMERA_ION_HEAP_ID ION_CP_MM_HEAP_ID
+#define MM_ION_HEAP_ID ION_CP_MM_HEAP_ID
+#define CAMERA_ION_HEAP_ID ION_CAMERA_HEAP_ID
 #define CAMERA_GRALLOC_HEAP_ID GRALLOC_USAGE_PRIVATE_CAMERA_HEAP
 #else
+#define MM_ION_HEAP_ID ION_IOMMU_HEAP_ID
 #define CAMERA_ION_HEAP_ID ION_IOMMU_HEAP_ID
 #define CAMERA_GRALLOC_HEAP_ID GRALLOC_USAGE_PRIVATE_IOMMU_HEAP
 #endif
@@ -627,13 +630,15 @@ int QCameraHeapMemory::getMatchBufIndex(const void *opaque,
  * PARAMETERS :
  *   @getMemory : camera memory request ops table
  *   @cached    : flag indicates if using cached memory
+ *   @video     : flag indicates if allocating for video stream
  *
  * RETURN     : none
  *==========================================================================*/
 QCameraStreamMemory::QCameraStreamMemory(camera_request_memory getMemory,
-                                         bool cached)
+                                         bool cached, bool video)
     :QCameraMemory(cached),
-     mGetMemory(getMemory)
+     mGetMemory(getMemory),
+     mIsVideo(video)
 {
     for (int i = 0; i < MM_CAMERA_MAX_NUM_FRAMES; i ++)
         mCameraMemory[i] = NULL;
@@ -667,8 +672,13 @@ QCameraStreamMemory::~QCameraStreamMemory()
  *==========================================================================*/
 int QCameraStreamMemory::allocate(int count, int size)
 {
-    int heap_mask = 0x1 << CAMERA_ION_HEAP_ID;
-    int rc = alloc(count, size, heap_mask);
+    int heap_mask;
+    int rc;
+    if (mIsVideo)
+        heap_mask = 0x1 << MM_ION_HEAP_ID;
+    else
+        heap_mask = 0x1 << CAMERA_ION_HEAP_ID;
+    rc = alloc(count, size, heap_mask);
     if (rc < 0)
         return rc;
 
@@ -694,8 +704,13 @@ int QCameraStreamMemory::allocate(int count, int size)
  *==========================================================================*/
 int QCameraStreamMemory::allocateMore(int count, int size)
 {
-    int heap_mask = 0x1 << CAMERA_ION_HEAP_ID;
-    int rc = alloc(count, size, heap_mask);
+    int heap_mask;
+    int rc;
+    if (mIsVideo)
+        heap_mask = 0x1 << MM_ION_HEAP_ID;
+    else
+        heap_mask = 0x1 << CAMERA_ION_HEAP_ID;
+    rc = alloc(count, size, heap_mask);
     if (rc < 0)
         return rc;
 
@@ -844,7 +859,7 @@ void *QCameraStreamMemory::getPtr(int index) const
  *==========================================================================*/
 QCameraVideoMemory::QCameraVideoMemory(camera_request_memory getMemory,
                                        bool cached)
-    : QCameraStreamMemory(getMemory, cached)
+    : QCameraStreamMemory(getMemory, cached, true)
 {
     memset(mMetadata, 0, sizeof(mMetadata));
 }
